@@ -2,6 +2,9 @@ package com.zybooks.pizzaparty
 
 import kotlin.math.ceil
 
+// Constant representing the number of slices per pizza
+const val SLICES_PER_PIZZA = 8
+
 /**
  * A class that calculates the number of pizzas needed for a pizza party based on the party size and hunger level.
  *
@@ -37,10 +40,5 @@ class PizzaCalculator(partySize: Int, private var hungerLevel: HungerLevel) {
     //  Initializes the PizzaCalculator with the given party size.
     init {
         this.partySize = partySize
-    }
-
-    companion object {
-        // Constant representing the number of slices per pizza
-        private const val SLICES_PER_PIZZA = 8
     }
 }
