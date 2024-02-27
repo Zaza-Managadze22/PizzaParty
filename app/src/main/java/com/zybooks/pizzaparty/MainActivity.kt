@@ -7,31 +7,37 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-/**
- * Main activity for the Pizza Party app.
- */
+private const val KEY_TOTAL_PIZZAS = "totalPizzas"
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var numAttendEditText: EditText
     private lateinit var numPizzasTextView: TextView
     private lateinit var howHungryRadioGroup: RadioGroup
+    private var totalPizzas = 0
 
-    /**
-     * Initializes the activity and sets up the UI components.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         numAttendEditText = findViewById(R.id.num_attend_edit_text)
         numPizzasTextView = findViewById(R.id.num_pizzas_text_view)
         howHungryRadioGroup = findViewById(R.id.hungry_radio_group)
+
+        // Restore state
+        if (savedInstanceState != null) {
+            totalPizzas = savedInstanceState.getInt(KEY_TOTAL_PIZZAS)
+            displayTotal()
+        }
     }
 
-    /**
-     * Handles the button click event to calculate the number of pizzas needed.
-     * @param view The clicked view.
-     */
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_TOTAL_PIZZAS, totalPizzas)
+    }
+
     fun calculateClick(view: View) {
+
         // Get the text that was typed into the EditText
         val numAttendStr = numAttendEditText.text.toString()
 
@@ -39,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val numAttend = numAttendStr.toIntOrNull() ?: 0
 
         // Get hunger level selection
-        val hungerLevel = when (howHungryRadioGroup.checkedRadioButtonId) {
+        val hungerLevel = when (howHungryRadioGroup.getCheckedRadioButtonId()) {
             R.id.light_radio_button -> PizzaCalculator.HungerLevel.LIGHT
             R.id.medium_radio_button -> PizzaCalculator.HungerLevel.MEDIUM
             else -> PizzaCalculator.HungerLevel.RAVENOUS
@@ -47,9 +53,11 @@ class MainActivity : AppCompatActivity() {
 
         // Get the number of pizzas needed
         val calc = PizzaCalculator(numAttend, hungerLevel)
-        val totalPizzas = calc.totalPizzas
+        totalPizzas = calc.totalPizzas
+        displayTotal()
+    }
 
-        // Place totalPizzas into the string resource and display
+    private fun displayTotal() {
         val totalText = getString(R.string.total_pizzas_num, totalPizzas)
         numPizzasTextView.text = totalText
     }
